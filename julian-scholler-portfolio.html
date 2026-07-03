@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Julian Scholler – Android Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #16181C;
+    --bg-card:   #1F2228;
+    --bg-subtle: #252830;
+    --copper:    #C07A45;
+    --copper-dim:#8A5530;
+    --text:      #F0EDE8;
+    --text-sec:  #9A9FA8;
+    --text-dim:  #5C6070;
+    --border:    #2C3040;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 60px;
+    background: rgba(22,24,28,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 18px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--copper); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-size: 14px; font-weight: 400;
+    color: var(--text-sec); text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 60px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.3;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(192,122,69,0.12) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .hero-content { position: relative; max-width: 780px; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--copper);
+    margin-bottom: 28px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block; width: 28px; height: 1px;
+    background: var(--copper);
+  }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(42px, 6vw, 80px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+  h1 .name-highlight { color: var(--copper); }
+  .hero-terminal {
+    font-family: 'Space Grotesk', monospace;
+    font-size: clamp(16px, 2.5vw, 22px);
+    font-weight: 400;
+    color: var(--text-sec);
+    margin-bottom: 36px;
+    min-height: 32px;
+  }
+  .hero-terminal .cursor {
+    display: inline-block;
+    width: 2px; height: 1.1em;
+    background: var(--copper);
+    vertical-align: middle;
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .hero-desc {
+    font-size: 17px; line-height: 1.7;
+    color: var(--text-sec);
+    max-width: 560px;
+    margin-bottom: 48px;
+  }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 28px;
+    background: var(--copper);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 15px;
+    border: none; border-radius: 6px;
+    text-decoration: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: #d48a52; transform: translateY(-1px); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 28px;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500; font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--text-sec); color: var(--text); }
+
+  .hero-stats {
+    display: flex; gap: 48px;
+    margin-top: 72px;
+    padding-top: 48px;
+    border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 36px; font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-num span { color: var(--copper); }
+  .stat-label {
+    font-size: 13px; color: var(--text-sec);
+    margin-top: 6px; letter-spacing: 0.02em;
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 100px 60px; }
+  .section-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--copper);
+    margin-bottom: 16px;
+  }
+  .section-eyebrow::before {
+    content: ''; display: block;
+    width: 20px; height: 1px; background: var(--copper);
+  }
+  h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700; letter-spacing: -0.02em;
+    line-height: 1.1; margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 16px; color: var(--text-sec);
+    max-width: 500px; margin-bottom: 60px;
+    line-height: 1.7;
+  }
+
+  /* ── SKILLS ── */
+  #skills { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .skill-card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .skill-card:hover { border-color: var(--copper-dim); transform: translateY(-2px); }
+  .skill-icon {
+    font-size: 22px; margin-bottom: 14px;
+  }
+  .skill-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 16px;
+    margin-bottom: 12px; color: var(--text);
+  }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-sec);
+    letter-spacing: 0.02em;
+  }
+  .tag.highlight {
+    border-color: var(--copper-dim);
+    color: var(--copper);
+    background: rgba(192,122,69,0.08);
+  }
+
+  /* ── KARRIERE ── */
+  #karriere { max-width: 900px; margin: 0 auto; }
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 8px; bottom: 8px;
+    width: 1px; background: var(--border);
+  }
+  .timeline-item {
+    position: relative;
+    padding-bottom: 52px;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-dot {
+    position: absolute; left: -38px; top: 6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .timeline-item:first-child .timeline-dot {
+    border-color: var(--copper);
+    background: var(--copper);
+    box-shadow: 0 0 0 4px rgba(192,122,69,0.15);
+  }
+  .timeline-meta {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .timeline-period {
+    font-size: 12px; font-weight: 500;
+    color: var(--copper);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .timeline-badge {
+    font-size: 11px; padding: 2px 8px;
+    background: rgba(192,122,69,0.1);
+    color: var(--copper);
+    border-radius: 3px;
+    border: 1px solid rgba(192,122,69,0.2);
+    font-weight: 500;
+  }
+  .timeline-company {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .timeline-role {
+    font-size: 14px; color: var(--text-sec);
+    margin-bottom: 16px; font-weight: 400;
+  }
+  .timeline-desc {
+    font-size: 15px; color: var(--text-sec);
+    line-height: 1.7; margin-bottom: 16px;
+  }
+  .timeline-tech { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* ── PROJEKTE ── */
+  #projekte { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  .project-card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    display: flex; flex-direction: column;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .project-card:hover { border-color: var(--copper-dim); transform: translateY(-3px); }
+  .project-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .project-icon { font-size: 28px; }
+  .project-link {
+    font-size: 12px; color: var(--text-dim);
+    text-decoration: none; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .project-link:hover { color: var(--copper); }
+  .project-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px; font-weight: 700;
+    margin-bottom: 8px; color: var(--text);
+  }
+  .project-client {
+    font-size: 12px; color: var(--copper);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 500; margin-bottom: 14px;
+  }
+  .project-desc {
+    font-size: 14px; color: var(--text-sec);
+    line-height: 1.7; flex: 1;
+    margin-bottom: 20px;
+  }
+  .project-tech { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* ── KONTAKT ── */
+  #kontakt { text-align: center; }
+  .contact-wrapper { max-width: 560px; margin: 0 auto; }
+  .contact-links {
+    display: flex; justify-content: center;
+    gap: 16px; flex-wrap: wrap; margin-top: 40px;
+  }
+  .contact-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-sec);
+    font-size: 14px;
+    transition: border-color 0.2s, color 0.2s, transform 0.15s;
+  }
+  .contact-item:hover { border-color: var(--copper-dim); color: var(--text); transform: translateY(-2px); }
+  .contact-item svg { color: var(--copper); flex-shrink: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 32px 60px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; color: var(--text-dim);
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-in {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section, #hero { padding: 80px 24px; }
+    footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
+    .hero-stats { gap: 28px; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">JS<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#karriere">Karriere</a></li>
+    <li><a href="#projekte">Projekte</a></li>
+    <li><a href="#kontakt">Kontakt</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Android Developer · Zweibrücken</div>
+    <h1>Julian<br><span class="name-highlight">Scholler.</span></h1>
+    <div class="hero-terminal">
+      <span id="typed-text"></span><span class="cursor"></span>
+    </div>
+    <p class="hero-desc">
+      Ich entwickle native Android-Apps mit Kotlin und Jetpack Compose –
+      mit klarem Fokus auf saubere Architektur, wartbaren Code und
+      direkte Zusammenarbeit im Team.
+    </p>
+    <div class="hero-actions">
+      <a href="#kontakt" class="btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 4l8 8 8-8"/></svg>
+        Kontakt aufnehmen
+      </a>
+      <a href="#karriere" class="btn-secondary">
+        Werdegang ansehen
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">5</div>
+        <div class="stat-label">Jahre Erfahrung</div>
+      </div>
+      <div>
+        <div class="stat-num">10<span>+</span></div>
+        <div class="stat-label">Kundenprojekte</div>
+      </div>
+      <div>
+        <div class="stat-num">3</div>
+        <div class="stat-label">Stationen</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-eyebrow">Tech-Stack</div>
+  <h2>Was ich mitbringe</h2>
+  <p class="section-sub">Mein Fokus liegt auf modernem nativen Android – von der UI bis zur Architektur.</p>
+
+  <div class="skills-grid fade-in">
+    <div class="skill-card">
+      <div class="skill-icon">📱</div>
+      <div class="skill-title">Android Development</div>
+      <div class="skill-tags">
+        <span class="tag highlight">Kotlin</span>
+        <span class="tag highlight">Jetpack Compose</span>
+        <span class="tag">Java</span>
+        <span class="tag">XML Views</span>
+        <span class="tag">Android SDK</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🏗️</div>
+      <div class="skill-title">Architektur</div>
+      <div class="skill-tags">
+        <span class="tag highlight">MVI</span>
+        <span class="tag highlight">MVVM</span>
+        <span class="tag">Clean Architecture</span>
+        <span class="tag">Repository Pattern</span>
+        <span class="tag">Hilt / DI</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">⚡</div>
+      <div class="skill-title">Kotlin Ecosystem</div>
+      <div class="skill-tags">
+        <span class="tag highlight">Coroutines</span>
+        <span class="tag highlight">Flow / StateFlow</span>
+        <span class="tag highlight">Kotlin Multiplatform</span>
+        <span class="tag">KSP</span>
+        <span class="tag">Apollo (GraphQL)</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🔌</div>
+      <div class="skill-title">APIs &amp; Daten</div>
+      <div class="skill-tags">
+        <span class="tag highlight">GraphQL</span>
+        <span class="tag">REST / Retrofit</span>
+        <span class="tag">Room</span>
+        <span class="tag">OkHttp</span>
+        <span class="tag">Bluetooth LE</span>
+        <span class="tag">NFC</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🧪</div>
+      <div class="skill-title">Testing &amp; Tooling</div>
+      <div class="skill-tags">
+        <span class="tag">JUnit</span>
+        <span class="tag">MockK</span>
+        <span class="tag">Turbine</span>
+        <span class="tag">AS Profiler</span>
+        <span class="tag">Git</span>
+        <span class="tag">CI/CD</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🔄</div>
+      <div class="skill-title">Weitere Technologien</div>
+      <div class="skill-tags">
+        <span class="tag">.NET MAUI</span>
+        <span class="tag">Xamarin</span>
+        <span class="tag">Scrum / Agile</span>
+        <span class="tag">Jira</span>
+        <span class="tag">Figma</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KARRIERE -->
+<section id="karriere" style="max-width:900px;margin:0 auto;">
+  <div class="section-eyebrow">Werdegang</div>
+  <h2>Meine Karriere</h2>
+  <p class="section-sub">Von der Ausbildung bis heute – native Android-Entwicklung als roter Faden.</p>
+
+  <div class="timeline fade-in">
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-meta">
+        <span class="timeline-period">Dez. 2024 – Heute</span>
+        <span class="timeline-badge">Aktuell</span>
+      </div>
+      <div class="timeline-company">EIKONA Logistics</div>
+      <div class="timeline-role">Kotlin Multiplatform Developer · Remote</div>
+      <div class="timeline-desc">
+        Verantwortlich für mehrere Workflows in der Habbl-Logistikplattform – einer konfigurierbaren
+        Workflow-Automation-App für Speditionen und Fahrer. Architekturmigration von MVVM auf MVI,
+        Performance-Optimierungen mit dem Android Studio Profiler, GraphQL-Integration.
+        Mitarbeit am Kotlin-Multiplatform-Modul für geteilte Business-Logik.
+      </div>
+      <div class="timeline-tech">
+        <span class="tag highlight">Kotlin</span>
+        <span class="tag highlight">KMP</span>
+        <span class="tag highlight">MVI</span>
+        <span class="tag">GraphQL</span>
+        <span class="tag">Compose</span>
+        <span class="tag">Coroutines</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-meta">
+        <span class="timeline-period">Sept. 2021 – Nov. 2024</span>
+      </div>
+      <div class="timeline-company">Groenewold IT Solutions</div>
+      <div class="timeline-role">Mobile Developer · Remote</div>
+      <div class="timeline-desc">
+        Kundenprojekte für verschiedene Branchen. Hauptentwickler der TILSBERK-App für
+        ein Bluetooth-Head-Up-Display im Motorradhelm bei Digades. Migration eines großen
+        Xamarin-Projekts auf .NET MAUI für Esylux.
+        Direkte Kundenkommunikation und Mitgestaltung von Architekturentscheidungen.
+      </div>
+      <div class="timeline-tech">
+        <span class="tag highlight">Kotlin</span>
+        <span class="tag highlight">BLE</span>
+        <span class="tag">MVVM</span>
+        <span class="tag">Java</span>
+        <span class="tag">.NET MAUI</span>
+        <span class="tag">Xamarin</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-meta">
+        <span class="timeline-period">Aug. 2017 – Sept. 2020</span>
+      </div>
+      <div class="timeline-company">Atino GmbH</div>
+      <div class="timeline-role">Trainee / Programmierer · Ausbildung Fachinformatiker Anwendungsentwicklung</div>
+      <div class="timeline-desc">
+        IHK-Abschluss als Fachinformatiker für Anwendungsentwicklung.
+        Bereits während der Ausbildung schwerpunktmäßig im Mobile-Bereich tätig.
+        Erste Android-Projekte in Java, Grundlagen moderner App-Entwicklung.
+      </div>
+      <div class="timeline-tech">
+        <span class="tag">Java</span>
+        <span class="tag">Android</span>
+        <span class="tag">IHK</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJEKTE -->
+<section id="projekte">
+  <div class="section-eyebrow">Projekte</div>
+  <h2>Ausgewählte Arbeiten</h2>
+  <p class="section-sub">Projekte die mich technisch besonders gefordert und geprägt haben.</p>
+
+  <div class="projects-grid fade-in">
+
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-icon">🪖</div>
+        <a href="https://www.digades.de/de/projekte-referenzen/head-display-fuer-motorradfahrer" target="_blank" class="project-link">↗ Mehr</a>
+      </div>
+      <div class="project-client">Digades · Groenewold</div>
+      <div class="project-title">TILSBERK HUD App</div>
+      <div class="project-desc">
+        Android-Companion-App für ein transparentes Head-Up-Display im Motorradhelm.
+        Navigation, Geschwindigkeit und Statusinfos werden per BLE auf das HUD übertragen.
+        Einer von zwei Hauptentwicklern – verantwortlich für BLE-Stack, State-Management und UI.
+      </div>
+      <div class="project-tech">
+        <span class="tag highlight">Kotlin</span>
+        <span class="tag highlight">Bluetooth LE</span>
+        <span class="tag">MVVM</span>
+        <span class="tag">Android SDK</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-icon">🚚</div>
+        <a href="https://www.habbl.com" target="_blank" class="project-link">↗ Mehr</a>
+      </div>
+      <div class="project-client">EIKONA Logistics</div>
+      <div class="project-title">Habbl – Workflow Platform</div>
+      <div class="project-desc">
+        Logistik-App für Speditionen mit dynamischen, serverseitig konfigurierbaren Workflows.
+        Abstraktionsschicht baut UI und Logik zur Laufzeit aus GraphQL-Daten.
+        Verantwortlich für Kontaktelement und Performance-Optimierung (Caching, Profiling).
+      </div>
+      <div class="project-tech">
+        <span class="tag highlight">Kotlin</span>
+        <span class="tag highlight">GraphQL</span>
+        <span class="tag highlight">MVI</span>
+        <span class="tag">KMP</span>
+        <span class="tag">Compose</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-icon">💡</div>
+        <span></span>
+      </div>
+      <div class="project-client">Esylux · Groenewold</div>
+      <div class="project-title">Cross-Platform Migration</div>
+      <div class="project-desc">
+        Migration einer großen produktiven Xamarin-App auf .NET MAUI im Team.
+        Erfahrung mit technologischen Migrationen, großen Codebasen und koordinierter
+        Refaktorierung ohne Feature-Regression.
+      </div>
+      <div class="project-tech">
+        <span class="tag">.NET MAUI</span>
+        <span class="tag">Xamarin</span>
+        <span class="tag">C#</span>
+        <span class="tag">Migration</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-icon">📸</div>
+        <span class="tag" style="font-size:11px;border-color:var(--copper-dim);color:var(--copper);">In Entwicklung</span>
+      </div>
+      <div class="project-client">Persönliches Projekt</div>
+      <div class="project-title">Momento App</div>
+      <div class="project-desc">
+        Foto- und Erinnerungs-App mit dunklem Kupfer-Ästhetik.
+        Vollständig in Jetpack Compose, Hilt für Dependency Injection,
+        Ktor-Backend mit PostgreSQL. Fokus auf saubere Architektur und UI-Details.
+      </div>
+      <div class="project-tech">
+        <span class="tag highlight">Compose</span>
+        <span class="tag highlight">Hilt</span>
+        <span class="tag">Ktor</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">KMP</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section id="kontakt">
+  <div class="contact-wrapper fade-in">
+    <div class="section-eyebrow" style="justify-content:center;">Kontakt</div>
+    <h2>Lass uns sprechen.</h2>
+    <p class="section-sub" style="margin:16px auto 0;text-align:center;">
+      Ich bin offen für neue Möglichkeiten als Android Developer –
+      bevorzugt im Homeoffice oder hybrid.
+    </p>
+    <div class="contact-links">
+      <a href="mailto:jul.scholler@hotmail.de" class="contact-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+        jul.scholler@hotmail.de
+      </a>
+      <a href="tel:+4915754805325" class="contact-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.19 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        +49 157 548 05325
+      </a>
+      <a href="https://linkedin.com/in/julian-scholler/" target="_blank" class="contact-item">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/Juelzx/" target="_blank" class="contact-item">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Julian Scholler</span>
+  <span>Android Developer · Zweibrücken, Deutschland</span>
+</footer>
+
+<script>
+  // ── Terminal Typer ──
+  const phrases = [
+    'Kotlin · Jetpack Compose · MVI',
+    'Android Developer seit 2020',
+    'Kotlin Multiplatform · GraphQL',
+    'Clean Architecture · Hilt · Flow',
+  ];
+  let pi = 0, ci = 0, deleting = false;
+  const el = document.getElementById('typed-text');
+
+  function type() {
+    const phrase = phrases[pi];
+    if (!deleting) {
+      el.textContent = phrase.slice(0, ++ci);
+      if (ci === phrase.length) { deleting = true; setTimeout(type, 2200); return; }
+    } else {
+      el.textContent = phrase.slice(0, --ci);
+      if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+    }
+    setTimeout(type, deleting ? 28 : 58);
+  }
+  type();
+
+  // ── Scroll fade-in ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
